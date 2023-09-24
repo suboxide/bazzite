@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-source /etc/default/bazzite
 
 # Script Version
 VER=1
@@ -20,7 +19,7 @@ if grep -qz 'fedora' <<< $(flatpak remotes); then
 fi
 
 # Lists of flatpaks
-FLATPAK_LIST=$(flatpak list --column=application)
+FLATPAK_LIST=$(flatpak list --columns=application)
 INSTALL_LIST=$(cat /usr/etc/flatpak/install)
 REMOVE_LIST=$(cat /usr/etc/flatpak/remove)
 

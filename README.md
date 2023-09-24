@@ -8,6 +8,21 @@
 [![build-bazzite](https://github.com/ublue-os/bazzite/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite/actions/workflows/build.yml)
 [![build-bazzite-arch](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml/badge.svg)](https://github.com/ublue-os/bazzite-arch/actions/workflows/build.yml)
 
+---
+# Table of Contents
+- [Features for **All** Bazzite Images](https://github.com/ublue-os/bazzite#about--features)
+  - [Features for **Desktop** Images](https://github.com/ublue-os/bazzite#desktop)
+  - [Features for **Steam Deck / HTPC** Images](https://github.com/ublue-os/bazzite#steam-deckhome-theater-pcs-htpcs)
+  - [Features for **GNOME** Images](https://github.com/ublue-os/bazzite#gnome)
+- [Why & Frequently Asked Questions](https://github.com/ublue-os/bazzite#why)
+- [Showcase & Newsletter](https://github.com/ublue-os/bazzite#showcase)
+- [Custom Packages](https://github.com/ublue-os/bazzite#custom-packages)
+- [Verification & Metrics](https://github.com/ublue-os/bazzite#verification)
+- [Special Thanks](https://github.com/ublue-os/bazzite#special-thanks)
+- [Building Your Own](https://github.com/ublue-os/bazzite#build-your-own)
+- [Community](https://github.com/ublue-os/bazzite#join-the-community)
+---
+
 ## About & Features
 
 Bazzite is an OCI image that serves as an alternative operating system for the [Steam Deck](https://www.steamdeck.com/), and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs.
@@ -37,7 +52,7 @@ Bazzite is built from [ublue-os/main](https://github.com/ublue-os/main) and [ubl
 - [GCAdapter_OC](https://github.com/hannesmann/gcadapter-oc-kmod) driver for overclocking Nintendo's Gamecube Controller Adapter to 1000hz polling.
 - Out of the box support for [Wooting](https://wooting.io/) keyboards.
 - Built in support for Southern Islands <sub><sup>(HD 7000)</sup></sub> and Sea Islands <sub><sup>(HD 8000)</sup></sub> AMD GPUs under the `amdgpu` driver.
-- A fix is available for [a TF2 bug](https://github.com/ValveSoftware/Source-1-Games/issues/5043) that makes the game crash on launch - `just fix-tf2-tcmalloc`
+- A fix is available for [a TF2 bug](https://github.com/ValveSoftware/Source-1-Games/issues/5043) that makes the game crash on launch - `just patch-tf2-tcmalloc`
 
 ### Desktop
 
@@ -156,12 +171,17 @@ Bazzite ships with the latest Linux kernel and SELinux enabled by default with f
 
 Check out the [FAQ](https://universal-blue.org/images/bazzite/FAQ/) for other topics surrounding the project.
 
+## Showcase
+
 ![KDE Vapor Theme](/repo_content/desktop1.png?raw=true "KDE Vapor Theme")
 ![KDE VGUI2 Theme](/repo_content/desktop2.png?raw=true "KDE VGUI2 Theme")
 ![Steam Game Mode](/repo_content/gamemode.png?raw=true "Steam Game Mode")
 ![Waydroid](/repo_content/waydroid.png?raw=true "Waydroid")
 ![GNOME Vapor Theme](/repo_content/gnome1.png?raw=true "GNOME Vapor Theme")
 ![GNOME VGUI2 Theme](/repo_content/gnome2.png?raw=true "GNOME VGUI2 Theme")
+![Distrobox Terminals](/repo_content/distrobox.png?raw=true "Distrobox Terminals")
+
+Check out our [newsletters](https://universal-blue.org/blog/category/bazzite/) that get published on a regular basis for updates on the project.
 
 ## Custom Packages
 

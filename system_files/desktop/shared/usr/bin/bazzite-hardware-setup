@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-source /etc/default/bazzite
+
+IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+IMAGE_NAME=$(jq -r '."image-name"' < $IMAGE_INFO)
+BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
 
 # SCRIPT VERSION
 HWS_VER=1
@@ -117,7 +120,7 @@ if [[ $IMAGE_FLAVOR = "nvidia"  ]]; then
   if [[ ! $KARGS =~ "nvidia-drm.modeset" ]]; then
     NEEDED_KARGS="$NEEDED_KARGS --append=nvidia-drm.modeset=1"
   fi
-elif [[ $IMAGE_FLAVOR = "main" ]]; then
+else
   echo "Checking for needed karg changes"
 
   if [[ $KARGS =~ "rd.driver.blacklist" ]]; then

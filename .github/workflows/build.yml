@@ -10,6 +10,7 @@ on:
       - '**.txt'
       - 'repo_content/**'
       - 'spec_files/**'
+      - 'post_install_files/**'
   push:
     branches:
       - main
@@ -18,6 +19,7 @@ on:
       - '**.txt'
       - 'repo_content/**'
       - 'spec_files/**'
+      - 'post_install_files/**'
   merge_group:
   workflow_dispatch:
 env:
@@ -34,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [main, nvidia]
+        image_flavor: [main, nokmods, nvidia]
         base_name: [bazzite, bazzite-deck]
         base_image_name: [kinoite, silverblue]
         major_version: [38]
@@ -128,8 +130,8 @@ jobs:
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
-            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers and living room home theater PCs.
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/README.md
+            org.opencontainers.image.description=Bazzite is an OCI image that serves as an alternative operating system for the Steam Deck, and a ready-to-game SteamOS-like for desktop computers, living room home theater PCs, and numerous other handheld PCs.
+            io.artifacthub.package.readme-url=https://bazzite.gg/
             io.artifacthub.package.logo-url=https://raw.githubusercontent.com/ublue-os/bazzite/main/repo_content/logo.png
 
       # Build image using Buildah action
