@@ -15,7 +15,7 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
 COPY system_files/shared system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
 
 # Add ublue packages, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
-COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+COPY --from=ghcr.io/ublue-os/akmods:main-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ublue-os-akmods.repo && \
     wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
@@ -25,7 +25,9 @@ RUN if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \
         /tmp/akmods-rpms/kmods/*openrgb*.rpm \
         /tmp/akmods-rpms/kmods/*ryzen-smu*.rpm \
         /tmp/akmods-rpms/kmods/*evdi*.rpm && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    mkdir -p /etc/akmods-rpms/ && \
+    mv /tmp/akmods-rpms/kmods/*steamdeck*.rpm /etc/akmods-rpms/steamdeck.rpm \
 ; fi
 
 # Setup Copr repos
@@ -56,6 +58,7 @@ RUN rpm-ostree override remove \
 RUN rpm-ostree install \
     ublue-update \
     extest.i686 \
+    discover-overlay \
     python3-pip \
     libadwaita \
     duperemove \
@@ -98,10 +101,12 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         wallpaper-engine-kde-plugin \
         kdeconnectd \
         rom-properties-kf5 && \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        xorg-x11-server-Xwayland && \
+    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+            xorg-x11-server-Xwayland \
+    ; fi && \
     if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
         rpm-ostree install colord-kde \
     ; fi && \
@@ -113,14 +118,24 @@ RUN if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
     rm -rf /tmp/wallpaper-engine-kde-plugin && \
     sed -i 's@After=plasma-core.target@After=plasma-core.target\nAfter=xdg-desktop-portal.service@g' /usr/lib/systemd/user/plasma-xdg-desktop-portal-kde.service \
 ; else \
-    rpm-ostree override replace \
-    --experimental \
-    --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
-        mutter \
-        mutter-common \
-        gnome-control-center \
-        gnome-control-center-filesystem \
-        xorg-x11-server-Xwayland && \
+    if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+            mutter \
+            mutter-common \
+            gnome-control-center \
+            gnome-control-center-filesystem \
+            xorg-x11-server-Xwayland \
+    ; else \
+        rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:kylegospo:gnome-vrr \
+            mutter \
+            mutter-common \
+            gnome-control-center \
+            gnome-control-center-filesystem \
+    ; fi && \
     rpm-ostree install \
         steamdeck-backgrounds \
         gradience \
@@ -166,6 +181,10 @@ RUN /tmp/image-info.sh && \
     mkdir -p "/usr/etc/profile.d/" && \
     ln -s "/usr/share/ublue-os/firstboot/launcher/login-profile.sh" \
     "/usr/etc/profile.d/ublue-firstboot.sh" && \
+    mkdir -p "/usr/etc/xdg/autostart" && \
+    cp "/usr/share/applications/discover_overlay.desktop" "/usr/etc/xdg/autostart/discover_overlay.desktop" && \
+    sed -i 's@Exec=discover-overlay@Exec=/usr/bin/bazzite-discover-overlay@g' /usr/etc/xdg/autostart/discover_overlay.desktop && \
+    rm /usr/share/applications/discover_overlay.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/etc/yafti.yml" && \
     pip install --prefix=/usr yafti && \
     pip install --prefix=/usr hyfetch && \
@@ -247,10 +266,10 @@ RUN wget https://copr.fedorainfracloud.org/coprs/kylegospo/LatencyFleX/repo/fedo
     sed -i 's@enabled=0@enabled=1@g' /etc/yum.repos.d/_copr_ycollet-audinux.repo
 
 # Install Valve's Steam Deck drivers as kmods
-COPY --from=ghcr.io/ublue-os/akmods:${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 RUN if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \
     rpm-ostree install \
-    /tmp/akmods-rpms/kmods/*steamdeck*.rpm \
+    /etc/akmods-rpms/steamdeck.rpm && \
+    rm -rf /etc/akmods-rpms \
 ; fi
 
 # Install gamescope-limiter patched Mesa and patched udisks2 (Needed for SteamOS SD card mounting)
@@ -306,7 +325,6 @@ RUN rpm-ostree install \
     vkBasalt \
     mangohud \
     sdgyrodsu \
-    discover-overlay \
     sddm-sugar-steamOS \
     ibus-pinyin \
     ibus-table-chinese-cangjie \
@@ -407,9 +425,6 @@ RUN /tmp/image-info.sh && \
     if grep -q "kinoite" <<< "${BASE_IMAGE_NAME}"; then \
         sed -i 's/Exec=.*/Exec=systemctl start return-to-gamemode.service/' /etc/skel.d/Desktop/Return.desktop \
     ; fi && \
-    cp "/usr/share/applications/discover_overlay.desktop" "/usr/etc/xdg/autostart/discover_overlay.desktop" && \
-    sed -i 's@Exec=discover-overlay@Exec=/usr/bin/bazzite-discover-overlay@g' /usr/etc/xdg/autostart/discover_overlay.desktop && \
-    rm /usr/share/applications/discover_overlay.desktop && \
     cp "/usr/share/ublue-os/firstboot/yafti.yml" "/usr/etc/yafti.yml" && \
     sed -i 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/g' /etc/systemd/logind.conf && \
     if grep -qv "nokmods" <<< ${IMAGE_FLAVOR}; then \

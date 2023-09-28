@@ -17,6 +17,11 @@ screens:
       show_terminal: true
       package_manager: yafti.plugin.run
       groups:
+        Add input group to current user:
+          description: Adds the input group to your current user. Required by certain controller drivers.
+          default: true
+          packages:
+          - Set input group: just --unstable add-user-to-input-group
         BIOS &amp; Firmware Updates:
           description: Enables BIOS &amp; Firmware updates for Steam Deck hardware
           default: true
@@ -76,6 +81,16 @@ screens:
           default: false
           packages:
           - Install Solaar: just --unstable install-solaar
+        Wootility:
+          description: A configurator for Wooting keyboards
+          default: false
+          packages:
+          - Retrieve Wootility: just --unstable get-wootility
+        OpenTabletDriver:
+          description: Open source, cross-platform, user-mode tablet driver
+          default: false
+          packages:
+          - Install OpenTabletDriver: just --unstable install-opentabletdriver
         Resilio Sync:
           description: A file synchronization utility powered by BitTorrent
           default: false

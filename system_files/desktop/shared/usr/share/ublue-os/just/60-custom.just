@@ -80,6 +80,17 @@ get-greenlight:
     chmod +x $HOME/Desktop/Greenlight.AppImage
   fi
 
+# Install Wootility for configuring Wooting Keyboards
+get-wootility:
+  #!/usr/bin/env bash
+  if grep -q 'it.mijorus.gearlever' <<< $(flatpak list); then
+    wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Downloads/wootility.AppImage
+    flatpak run it.mijorus.gearlever $HOME/Downloads/wootility.AppImage
+  else
+    wget "https://api.wooting.io/public/wootility/download?os=linux&branch=lekker" -O $HOME/Desktop/wootility.AppImage
+    chmod +x $HOME/Desktop/wootility.AppImage
+  fi
+
 # Enable Supergfxctl, a Nvidia GPU switcher for hybrid laptops
 enable-supergfxctl: 
   #!/usr/bin/env bash
@@ -211,11 +222,20 @@ enable-flatpak-theming:
 
 # Enable XwaylandVideoBridge for screensharing on KDE
 fix-screenshare:
-  IMAGE_INFO="/usr/share/ublue-os/image-info.json" && \
-  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO) && \
-  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then \
-    mkdir -p $HOME/.config/autostart && \
-    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/; \
-  else \
-    echo "This is only supported under KDE."; \
+  #!/usr/bin/env bash
+  IMAGE_INFO="/usr/share/ublue-os/image-info.json"
+  BASE_IMAGE_NAME=$(jq -r '."base-image-name"' < $IMAGE_INFO)
+  if [[ ${BASE_IMAGE_NAME} == 'kinoite' ]]; then
+    mkdir -p $HOME/.config/autostart
+    cp /usr/share/applications/org.kde.xwaylandvideobridge.desktop $HOME/.config/autostart/
+  else
+    echo "This is only supported under KDE."
   fi
+
+# Add user to "input" group required by certain controller drivers
+add-user-to-input-group:
+  #!/usr/bin/env bash
+  if ! grep -q "input" /etc/group; then
+    sudo bash -c 'grep "input" /lib/group >> /etc/group'
+  fi
+  sudo usermod -a -G input $USER
