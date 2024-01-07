@@ -8,7 +8,7 @@
 %global with_omx 1
 %global with_opencl 1
 %endif
-%global base_vulkan ,amd
+%global base_vulkan ,amd,nouveau-experimental
 %endif
 
 %ifarch %{ix86} x86_64
@@ -63,7 +63,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 23.3.1
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        100.bazzite.{{{ git_dir_version }}}
+Release:        102.bazzite.{{{ git_dir_version }}}
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
@@ -76,8 +76,11 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Patch10:        gnome-shell-glthread-disable.patch
 Patch11:        0001-intel-compiler-move-gen5-final-pass-to-actually-be-f.patch
 
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26105/
+Patch30:        26105.patch
+
 # https://gitlab.com/evlaV/mesa/
-Patch30:         valve.patch
+Patch40:        valve.patch
 
 BuildRequires:  meson >= 1.2.0
 BuildRequires:  gcc
@@ -665,6 +668,8 @@ rm -Rf %{buildroot}%{_datadir}/drirc.d/00-mesa-defaults.conf
 %{_datadir}/drirc.d/00-radv-defaults.conf
 %endif
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
+%{_libdir}/libvulkan_nouveau.so
+%{_datadir}/vulkan/icd.d/nouveau_icd.*.json
 %ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json

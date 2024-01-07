@@ -1,6 +1,7 @@
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
+ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-$BASE_IMAGE_NAME-$IMAGE_FLAVOR}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
@@ -11,6 +12,7 @@ ARG IMAGE_NAME="${IMAGE_NAME:-bazzite}"
 ARG IMAGE_VENDOR="${IMAGE_VENDOR:-ublue-os}"
 ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
 ARG AKMODS_FLAVOR="${AKMODS_FLAVOR:-main}"
+ARG IMAGE_BRANCH="${IMAGE_BRANCH:-main}"
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-kinoite}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 
@@ -166,14 +168,15 @@ RUN rpm-ostree install \
         fira-code-fonts \
         glow \
         gum \
+        setools \
         redhat-lsb-core && \
     ln -s /usr/share/fonts/google-noto-sans-cjk-fonts /usr/share/fonts/noto-cjk && \
     wget https://raw.githubusercontent.com/scaronni/steam-proton-mf-wmv/master/installcab.py -O /usr/bin/installcab && \
     wget https://github.com/scaronni/steam-proton-mf-wmv/blob/master/install-mf-wmv.sh -O /usr/bin/install-mf-wmv && \
     sed -i 's@python3 installcab.py@/usr/bin/installcab@g' /usr/bin/install-mf-wmv && \
     wget https://raw.githubusercontent.com/jlu5/icoextract/master/exe-thumbnailer.thumbnailer -O /usr/share/thumbnailers/exe-thumbnailer.thumbnailer && \
-    wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.service -O /usr/lib/systemd/system/btrfs-dedup@.service && \
-    wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/main/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer
+    wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/11114e4ff791eb2c385814c2fcbac6a83f144f35/files/usr/lib/systemd/system/btrfs-dedup@.service -O /usr/lib/systemd/system/btrfs-dedup@.service && \
+    wget https://gitlab.com/popsulfr/steamos-btrfs/-/raw/11114e4ff791eb2c385814c2fcbac6a83f144f35/files/usr/lib/systemd/system/btrfs-dedup@.timer -O /usr/lib/systemd/system/btrfs-dedup@.timer
 
 # Install Steam & Lutris, plus supporting packages
 RUN rpm-ostree override replace \
@@ -329,7 +332,8 @@ RUN if grep -qv "nvidia" <<< "${IMAGE_NAME}"; then \
     sed -i~ -E 's/=.\$\(command -v (nft|ip6?tables-legacy).*/=/g' /usr/lib/waydroid/data/scripts/waydroid-net.sh && \
     rm -f /usr/etc/modprobe.d/nvidia.conf \
 ; else \
-    rm -f /usr/etc/modprobe.d/amdgpu.conf \
+    rm -f /usr/etc/modprobe.d/amdgpu.conf && \
+    rm -f /usr/share/vulkan/icd.d/nouveau_icd.*.json \
 ; fi
 
 # Cleanup & Finalize
