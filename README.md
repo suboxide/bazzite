@@ -460,10 +460,10 @@ sudo mokutil --import secure_boot_key.der
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/ashylily">
-            <img src="https://avatars.githubusercontent.com/u/20535390?v=4" width="100;" alt="ashylily"/>
+        <a href="https://github.com/kitten-lily">
+            <img src="https://avatars.githubusercontent.com/u/20535390?v=4" width="100;" alt="kitten-lily"/>
             <br />
-            <sub><b>ashylily</b></sub>
+            <sub><b>kitten-lily</b></sub>
         </a>
     </td>
     <td align="center">
